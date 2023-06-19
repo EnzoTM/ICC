@@ -8,7 +8,8 @@ typedef struct {
     double preco; //preço do produto
     char nome[100]; //nome do produto
 } Produto;
- 
+
+//---------------Prototipos begin
 void inserir_produto(Produto *estoque, int *n);
 
 void aumentar_estoque(Produto *estoque);
@@ -22,13 +23,14 @@ void consultar_estoque(Produto *estoque, int n);
 void consultar_saldo(double saldo);
 
 void aloca(Produto **v, int n);
+//-----------------Prototipos end
 
 void aloca(Produto **v, int n){
     *v = (Produto *) malloc(sizeof(Produto) * n); //alocar memória para o número de produtos que pode ter no estoque
 }
 
 void inserir_produto(Produto *estoque, int *n){
-    Produto produto_tmp; //criar o nosso produto
+    Produto produto_tmp; //produto auxiliar
 
     scanf(" %s %d %lf", produto_tmp.nome, &produto_tmp.quantidade, &produto_tmp.preco); //ler as informações do produto
 
@@ -65,7 +67,7 @@ void venda(Produto *estoque, double *saldo){
 
         printf("%s %.2lf\n", estoque[codigo].nome, estoque[codigo].preco);
 
-        total += estoque[codigo].preco;
+        total += estoque[codigo].preco; //agregar o valor do produto vendido no total da compra
 
         scanf(" %d", &codigo);
     }
@@ -92,7 +94,7 @@ void consultar_saldo(double saldo){
 }
 
 int main(int argc, char *argv[]){
-    Produto * estoque; //o estoque vai ser um vetir de produtos
+    Produto * estoque; //o estoque vai ser um vetor de produtos
 
     double saldo = 100.0;
 
@@ -129,4 +131,5 @@ int main(int argc, char *argv[]){
 
         scanf(" %s", comando);
     }
+    return 0;
 }
