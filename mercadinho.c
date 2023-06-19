@@ -28,19 +28,13 @@ void aloca(Produto **v, int n){
 }
 
 void inserir_produto(Produto *estoque, int *n){
-    printf("akjsvdaksvkajs\n");
-    printf("%d\n", *n);
     Produto produto_tmp; //criar o nosso produto
 
     scanf(" %s %d %lf", produto_tmp.nome, &produto_tmp.quantidade, &produto_tmp.preco); //ler as informações do produto
 
     estoque[*n] = produto_tmp; //inserir o nosso produto no estoque no index n 
     
-    *n = *n + 1; //aumentar o número de produtos no estoque atual por 1
-
-    for (int i = 0; i < *n; i++){
-        printf("%s %d %lf\n", estoque[i].nome, estoque[i].quantidade, estoque[i].preco);
-    }
+    *n +=  1; //aumentar o número de produtos no estoque atual por 1
 }
 
 void aumentar_estoque(Produto *estoque){
@@ -76,7 +70,7 @@ void venda(Produto *estoque, double *saldo){
         scanf(" %d", &codigo);
     }
 
-    printf("Total: %.2lf", total);
+    printf("Total: %.2lf\n", total);
 
     printf("--------------------------------------------------\n");
 
@@ -92,12 +86,12 @@ void consultar_estoque(Produto *estoque, int n){
 }
 
 void consultar_saldo(double saldo){
-    printf("Saldo: %lf\n", saldo);
+    printf("Saldo: %.2lf\n", saldo);
 
     printf("--------------------------------------------------\n");
 }
 
-int main(int argc, char argv[]){
+int main(int argc, char *argv[]){
     Produto * estoque; //o estoque vai ser um vetir de produtos
 
     double saldo = 100.0;
@@ -105,13 +99,14 @@ int main(int argc, char argv[]){
     int quantidade_de_produtos_no_estoque_atual = 0;
 
     //a função atoi passa o argumento que inicialmente é uma string para inteiro
-    aloca(&estoque, atoi(argv)); //chamar a função para alocar memória
+  //printf("%s\n", argv[1]);
+    aloca(&estoque, atoi(argv[1])); //chamar a função para alocar memória
 
     char comando[2]; //array que vai receber o comando que o programa deve executar
 
     scanf(" %s", comando); //lendo o comando
 
-    while (comando != "FE"){ //enquanto o comando não for "FE" o programa deve ficar rodando
+    while (comando[0] != 'F'){ //enquanto o comando não for "FE" o programa deve ficar rodando
         //switch para saber qual função rodar
         //ele será divido em duas partes para analisar o comando, formado por duas letras, por completo
         switch (comando[0]){
