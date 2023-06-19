@@ -1,23 +1,89 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 //criação do tipo de dado Produto
 typedef struct {
-    int codigo; //código do prudto (entre 0 e 99)
     int quantidade; //quantiade do produto no estoque
-    float preco; //preço do produto
+    double preco; //preço do produto
+    char nome[100]; //nome do produto
 } Produto;
  
-int inserir_produto();
+void inserir_produto(Produto *estoque, int *n);
 
-void aloca(char **v);
+void aumentar_estoque(Produto *estoque);
 
-void aloca(char **v){
+void modificar_preco(Produto *estoque);
+
+void venda();
+
+void consultar_estoque();
+
+void consultar_saldo();
+
+void aloca(Produto **v, int n);
+
+void aloca(Produto **v, int n){
+    *v = (Produto *) malloc(sizeof(Produto) * n); //alocar memória para o número de produtos que pode ter no estoque
+}
+
+void inserir_produto(Produto *estoque, int *n){
+    Produto produto_tmp; //criar o nosso produto
+
+    scanf(" %s %d %lf", produto_tmp.nome, produto_tmp.quantidade, produto_tmp.preco); //ler as informações do produto
+
+    estoque[*n] = produto_tmp; //inserir o nosso produto no estoque no index n 
     
+    *n ++; //aumentar o número de produtos no estoque atual por 1
+}
+
+void aumentar_estoque(Produto *estoque){
+    int codigo, quantidade;
+
+    scanf(" %d %d", codigo, quantidade); //ler o código do produto a ter a quantidade alterada e o valor a ser somado
+
+    estoque[codigo].quantidade += quantidade; //aumentar a quantidade no estoque
+}
+
+void modificar_preco(Produto *estoque){
+    int codigo;
+    double preco;
+
+    scanf(" %d %lf", codigo, preco); //ler o código do produto a ter o preço alterado e o preço
+
+    estoque[codigo].preco = preco; //alterar o preço
+}
+
+void venda(Produto *estoque, int *saldo){
+    int codigo;
+    double total = 0.0;
+
+    scanf(" %d", codigo);
+
+    while (codigo != -1){
+        estoque[codigo].quantidade --; //diminuir a quantidade do produto no estoque por 1
+
+        printf("%s %.2lf\n", estoque[codigo].nome, estoque[codigo].preco);
+
+        total += estoque[codigo].preco;
+
+        scanf(" %d", codigo);
+    }
+
+    printf("Total: %.2lf", total);
+
+    printf("--------------------------------------------------");
 }
 
 int main(int argc, char argv[]){
-    aloca(&argv);
+    Produto * estoque; //o estoque vai ser um vetir de produtos
+
+    double saldo = 100.0;
+
+    int quantidade_de_produtos_no_estoque_atual = 0;
+
+    //a função atoi passa o argumento que inicialmente é uma string para inteiro
+    aloca(&estoque, atoi(argv)); //chamar a função para alocar memória
 
     char comando[2]; //array que vai receber o comando que o programa deve executar
 
@@ -27,9 +93,23 @@ int main(int argc, char argv[]){
         //switch para saber qual função rodar
         //ele será divido em duas partes para analisar o comando, formado por duas letras, por completo
         switch (comando[0]){
-            case 'I': inserir_produto();
+            case 'I': inserir_produto(estoque, &quantidade_de_produtos_no_estoque_atual);
                 break;  
-            case 'A'  : 
+            case 'A': aumentar_estoque(estoque);
+                break;
+            case 'M': modificar_preco(estoque);
+                break;
+            case 'V': venda(estoque, &saldo);
+                break;
+            case 'C': 
+                switch (comando[1]){
+                    case 'E': consultar_estoque();
+                        break;
+                    case 'S': consultar_saldo();
+                        break;
+                }
         }
+
+        scanf(" %s", comando);
     }
 }
