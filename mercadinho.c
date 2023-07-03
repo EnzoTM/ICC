@@ -6,7 +6,7 @@
 
 //criação do tipo de dado Produto
 typedef struct {
-    int quantidade; //quantiade do produto no estoque
+    int quantidade; //quantidade do produto no estoque
     double preco; //preço do produto
     char nome[100]; //nome do produto
 } Produto;
@@ -41,7 +41,7 @@ void inserir_produto(Produto **estoque, int *n, int total_de_produtos){
     scanf(" %s %d %lf", produto_tmp.nome, &produto_tmp.quantidade, &produto_tmp.preco); //ler as informações do produto
 
     if (*n + 1 >= total_de_produtos){ //se a quantidade de produtos atualmente no estoque for maior do que a quantidade de produtos inicilamente alocada
-        *estoque = realloc(*estoque, *n + 1);
+        *estoque = realloc(*estoque, (*n + 1)*sizeof(Produto));
     }
 
     (*estoque)[*n] = produto_tmp; //inserir o nosso produto no estoque no index n 
@@ -107,11 +107,11 @@ void ler_arquivo(Produto **estoque, FILE *fp, int *total_de_produtos, int *quant
     //ler o arquivo conforme sua organização
     fread(total_de_produtos, sizeof(int), 1, fp); //ler a primeira parte do arquivo, que será a quantidade de produtos presente no mesmo
 
-    *quantidade_de_produtos_no_estoque_atual = total_de_produtos; //como iremos receber todos os produtos no estoque do arquivo, no fim de sua leitura, a quantidade de produtos contidos no estoque vai ser a quantidade máxima de prodtuos no estoque
+    *quantidade_de_produtos_no_estoque_atual = *total_de_produtos; //como iremos receber todos os produtos no estoque do arquivo, no fim de sua leitura, a quantidade de produtos contidos no estoque vai ser a quantidade máxima de prodtuos no estoque
 
     fread(saldo, sizeof(double), 1, fp); //ler a segunda parte do arquivo, quer será o saldo 
 
-    aloca(*estoque, *total_de_produtos); //alocar dinamicamente o número total de produtos que se tem no estoque
+    aloca(&(*estoque), *total_de_produtos); //alocar dinamicamente o número total de produtos que se tem no estoque
 
     //o resto do arquivo será cada item do vetor estoque de tamanho total_de_produtos
     for (int i = 0; i < *total_de_produtos; i++){
@@ -141,24 +141,26 @@ int main(void){
     int total_de_produtos; //declarar a variavel para saber a quantidade de produtos que se tem no total no estoque
 
     int quantidade_de_produtos_no_estoque_atual; //declarar a variavel referente a quantidade de produtos no estoque no momento atual da execução do programa
-
     fp = fopen("estoque.txt", "rb"); //tentar abrir o arquivo de estoque
 
-    Produto * estoque; //o estoque vai ser um vetor de produtos
-
+    Produto *estoque; //o estoque vai ser um vetor de produtos
+    
     if (fp == NULL){ //se o arquivo nao existir
-        fclose(fp); //fechar o arquivo que está em modo leitura
+        //fclose(fp); //fechar o arquivo que está em modo leitura
+    printf("asidhgbsadn\n");
 
         fp = fopen(ARQUIVO, "wb"); //abrir (criar) o arquivo em modo de escrita
         
-        scanf("%d", total_de_produtos); //ler a quantidade de produtos iformadas pelo usuário já que não se tem um arquivo com as informações necessárias
+        scanf("%d", &total_de_produtos); //ler a quantidade de produtos iformadas pelo usuário já que não se tem um arquivo com as informações necessárias
 
-        scanf("%lf", saldo); //ler o saldo informado pelo usuário já que não se tem um arquivo com as informações necessárias
+        scanf("%lf", &saldo); //ler o saldo informado pelo usuário já que não se tem um arquivo com as informações necessárias
 
         aloca(&estoque, total_de_produtos); //alocar dinamicamente o número total de produtos que se tem no estoque
 
         quantidade_de_produtos_no_estoque_atual = 0; //como nenhum produto foi informado, a quantidade de produtos no estoque atual é 0
     }else {
+    printf("asidhgbsadn2\n");
+        
         ler_arquivo(&estoque, fp, &total_de_produtos, &quantidade_de_produtos_no_estoque_atual, &saldo);
     }
 
