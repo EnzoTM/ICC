@@ -94,14 +94,23 @@ void consultar_saldo(double saldo){
 }
 
 int main(int argc, char *argv[]){
-    Produto * estoque; //o estoque vai ser um vetor de produtos
+    FILE *fp; //declarar o ponteiro que irá apontar para o arquivo referente ao estoque
 
-    double saldo = 100.0;
+    double saldo; //declarar a variavel do saldo
+
+    fp = fopen("estoque.txt", "rb"); //tentar abrir o arquivo de estoque
+
+    if (fp == NULL){ //se o arquivo nao existir
+        fclose(fp); //fechar o arquivo que está em modo leitura
+
+        fp = fopen("estoque.txt", "wb"); //abrir (criar) o arquivo em mode de escrita
+    }
+
+    Produto * estoque; //o estoque vai ser um vetor de produtos
 
     int quantidade_de_produtos_no_estoque_atual = 0;
 
     //a função atoi passa o argumento que inicialmente é uma string para inteiro
-  //printf("%s\n", argv[1]);
     aloca(&estoque, atoi(argv[1])); //chamar a função para alocar memória
 
     char comando[2]; //array que vai receber o comando que o programa deve executar
