@@ -124,7 +124,7 @@ void ler_arquivo(Produto **estoque, FILE *fp, int *total_de_produtos, int *quant
 void salvar(FILE *fp, int quantidade_de_produtos_no_estoque_atual, double saldo, Produto *estoque){
     fclose(fp); //fechar o arquivo, pois ele está em modo de leitura
 
-    fp = fopen(ARQUIVO, "wb"); //abrir o arquivo em modo de escrita
+    fp = fopen(ARQUIVO, "r+b"); //abrir o arquivo em modo de escrita
 
     fwrite(&quantidade_de_produtos_no_estoque_atual, sizeof(int), 1, fp); //escrever a quantidade total de produtos que se tem no estoque, que neste caso, é o número de produtos no estoque
 
@@ -147,7 +147,6 @@ int main(void){
     
     if (fp == NULL){ //se o arquivo nao existir
         //fclose(fp); //fechar o arquivo que está em modo leitura
-    printf("asidhgbsadn\n");
 
         fp = fopen(ARQUIVO, "wb"); //abrir (criar) o arquivo em modo de escrita
         
@@ -159,7 +158,7 @@ int main(void){
 
         quantidade_de_produtos_no_estoque_atual = 0; //como nenhum produto foi informado, a quantidade de produtos no estoque atual é 0
     }else {
-    printf("asidhgbsadn2\n");
+    
         
         ler_arquivo(&estoque, fp, &total_de_produtos, &quantidade_de_produtos_no_estoque_atual, &saldo);
     }
