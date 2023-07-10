@@ -1,8 +1,14 @@
+/*
+Projeto final: Mercadinho
+Alunos:
+*Enzo Tonon Morente - 14568476
+*Thales Sena - 
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define ARQUIVO "estoque.txt"
+#define ARQUIVO "estoque.dat"
 
 //criação do tipo de dado Produto
 typedef struct {
@@ -28,11 +34,11 @@ void aloca(Produto **v, int n);
 
 void ler_arquivo(Produto **estoque, FILE *fp, int *total_de_produtos, int *quantidade_de_produtos_no_estoque_atual, double *saldo);
 
-void salvar(FILE *fp, int quantidade_de_produtos_no_estoque_atual, double saldo, Produto *estoque);
+void salvar(FILE *fp, int *quantidade_de_produtos_no_estoque_atual, double *saldo, Produto **estoque);
 //-----------------Prototipos end
 
 void aloca(Produto **v, int n){
-    *v = (Produto *) malloc(sizeof(Produto) * n); //alocar memória para o número de produtos que pode ter no estoque
+    *v = (Produto *) malloc((sizeof(Produto) * n) + (sizeof(Produto) * 10)); //alocar memória para o número de produtos que pode ter no estoque + 10
 }
 
 void inserir_produto(Produto **estoque, int *n, int total_de_produtos){
@@ -73,11 +79,13 @@ void venda(Produto *estoque, double *saldo){
     scanf(" %d", &codigo);
 
     while (codigo != -1){
-        estoque[codigo].quantidade --; //diminuir a quantidade do produto no estoque por 1
+        if (estoque[codigo].quantidade > 0){ //so pode realizar a venda se existir produto no estoque
+            estoque[codigo].quantidade --; //diminuir a quantidade do produto no estoque por 1
 
-        printf("%s %.2lf\n", estoque[codigo].nome, estoque[codigo].preco);
+            printf("%s %.2lf\n", estoque[codigo].nome, estoque[codigo].preco);
 
-        total += estoque[codigo].preco; //agregar o valor do produto vendido no total da compra
+            total += estoque[codigo].preco; //agregar o valor do produto vendido no total da compra
+        }
 
         scanf(" %d", &codigo);
     }
@@ -107,30 +115,26 @@ void ler_arquivo(Produto **estoque, FILE *fp, int *total_de_produtos, int *quant
     //ler o arquivo conforme sua organização
     fread(total_de_produtos, sizeof(int), 1, fp); //ler a primeira parte do arquivo, que será a quantidade de produtos presente no mesmo
 
-    *quantidade_de_produtos_no_estoque_atual = *total_de_produtos; //como iremos receber todos os produtos no estoque do arquivo, no fim de sua leitura, a quantidade de produtos contidos no estoque vai ser a quantidade máxima de prodtuos no estoque
+    *quantidade_de_produtos_no_estoque_atual = *total_de_produtos; //como iremos receber todos os produtos no estoque do arquivo, no fim de sua leitura, a quantidade de produtos contidos no estoque atualmente vai ser a quantidade máxima de prodtuos no estoque
 
     fread(saldo, sizeof(double), 1, fp); //ler a segunda parte do arquivo, quer será o saldo 
 
-    aloca(&(*estoque), *total_de_produtos); //alocar dinamicamente o número total de produtos que se tem no estoque
+    aloca(estoque, *total_de_produtos); //alocar dinamicamente o número total de produtos que se tem no estoque
 
     //o resto do arquivo será cada item do vetor estoque de tamanho total_de_produtos
-    for (int i = 0; i < *total_de_produtos; i++){
-        Produto tmp;
+    fread(*estoque, sizeof(Produto), *total_de_produtos, fp);
 
-        fread(estoque[i], sizeof(Produto), 1, fp); //ler o produto no index atual
-    }
+    fclose(fp); //fechar o arquivo
 }
 
-void salvar(FILE *fp, int quantidade_de_produtos_no_estoque_atual, double saldo, Produto *estoque){
-    fclose(fp); //fechar o arquivo, pois ele está em modo de leitura
+void salvar(FILE *fp, int *quantidade_de_produtos_no_estoque_atual, double *saldo, Produto **estoque){
+    fp = fopen(ARQUIVO, "wb"); //abrir o arquivo em modo de escrita
 
-    fp = fopen(ARQUIVO, "r+b"); //abrir o arquivo em modo de escrita
+    fwrite(quantidade_de_produtos_no_estoque_atual, sizeof(int), 1, fp); //escrever a quantidade total de produtos que se tem no estoque, que neste caso, é o número de produtos no estoque
 
-    fwrite(&quantidade_de_produtos_no_estoque_atual, sizeof(int), 1, fp); //escrever a quantidade total de produtos que se tem no estoque, que neste caso, é o número de produtos no estoque
+    fwrite(saldo, sizeof(double), 1, fp); //escrever o salário
 
-    fwrite(&saldo, sizeof(double), 1, fp); //escrever o salário
-
-    fwrite(estoque, sizeof(Produto), quantidade_de_produtos_no_estoque_atual, fp); //escrever todos os produtos do estoue no arquivo
+    fwrite(*estoque, sizeof(Produto), *quantidade_de_produtos_no_estoque_atual, fp); //escrever todos os produtos do estoue no arquivo
 }
 
 int main(void){
@@ -141,14 +145,13 @@ int main(void){
     int total_de_produtos; //declarar a variavel para saber a quantidade de produtos que se tem no total no estoque
 
     int quantidade_de_produtos_no_estoque_atual; //declarar a variavel referente a quantidade de produtos no estoque no momento atual da execução do programa
-    fp = fopen("estoque.txt", "rb"); //tentar abrir o arquivo de estoque
+
+    fp = fopen(ARQUIVO, "rb"); //tentar abrir o arquivo de estoque
 
     Produto *estoque; //o estoque vai ser um vetor de produtos
     
     if (fp == NULL){ //se o arquivo nao existir
-        //fclose(fp); //fechar o arquivo que está em modo leitura
-
-        fp = fopen(ARQUIVO, "wb"); //abrir (criar) o arquivo em modo de escrita
+        //fp = fopen(ARQUIVO, "wb"); //abrir (criar) o arquivo em modo de escrita
         
         scanf("%d", &total_de_produtos); //ler a quantidade de produtos iformadas pelo usuário já que não se tem um arquivo com as informações necessárias
 
@@ -158,8 +161,7 @@ int main(void){
 
         quantidade_de_produtos_no_estoque_atual = 0; //como nenhum produto foi informado, a quantidade de produtos no estoque atual é 0
     }else {
-    
-        
+        //se tiver um arquivo, le-lo
         ler_arquivo(&estoque, fp, &total_de_produtos, &quantidade_de_produtos_no_estoque_atual, &saldo);
     }
 
@@ -190,7 +192,9 @@ int main(void){
         scanf(" %s", comando);
     }
 
-    salvar(fp, quantidade_de_produtos_no_estoque_atual, saldo, estoque);
+    salvar(fp, &quantidade_de_produtos_no_estoque_atual, &saldo, &estoque);
+
+    free(estoque); //liberar a memoria alocada para o vetor estoque
 
     return 0;
 }
