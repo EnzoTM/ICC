@@ -2,7 +2,7 @@
 Projeto final: Mercadinho
 Alunos:
 *Enzo Tonon Morente - 14568476
-*Thales Sena - 14608873
+*Thales Sena de Queiroz - 14608873
 */
 #include <stdio.h>
 #include <stdlib.h>
